@@ -1,0 +1,175 @@
+DROP TABLE IF EXISTS [Taverns,Location,Users,Roles,BasementRats,];
+
+
+CREATE TABLE [Taverns] (
+	ID INT IDENTITY(1, 1),
+	TavernName varchar(250),
+ 	LocationId int,
+	OwnerId int,
+);
+
+CREATE TABLE [Users] (
+	ID INT IDENTITY(1, 1),
+	UserName varchar(250),
+ 	RoleId int,
+);
+CREATE TABLE [Roles] (
+	ID INT IDENTITY(1, 1),
+	RoleName varchar(50),
+ 	RoleDescription varchar(max),
+);
+CREATE TABLE [Location] (
+	ID INT IDENTITY(1, 1),
+	LocationName varchar(100),
+);
+CREATE TABLE [BasementRats] (
+	ID INT IDENTITY(1, 1),
+	RatsName varchar(100),
+);
+CREATE TABLE [Supplies] (
+    ID int IDENTITY(1,1),
+    SuplyName varchar(255),
+    SuplyLocation varchar(255),
+   
+);
+CREATE TABLE [SupProducts](
+    ID int IDENTITY(1,1),
+    ProductName varchar(255),
+    Cost DECIMAL(7,2),
+    Quantity int,
+    Unit varchar(255),
+    QuantityOnStock int,
+    ProductCreated DATE,
+    ExpirationDate DATE,
+    UpdatedDate DATE,
+	);
+
+CREATE TABLE ReceivedSups (
+    ID INT IDENTITY(1,1),
+    AmountRcvd int,
+    DateRcvd DATE,
+);
+
+CREATE TABLE Services (
+    ID int IDENTITY(1,1),
+    ServName VARCHAR(255),
+    StatusID int,
+);
+
+CREATE TABLE ServStatus (
+    ID int IDENTITY(1,1),
+    StatusName varchar(255)
+);
+
+CREATE TABLE Guests (
+    ID INT IDENTITY(1,1),
+    GuestName VARCHAR(255),
+    GuestAdress varchar(255),
+    GuestDOB DATE,
+    GuestSex varchar(1),
+);
+
+CREATE TABLE SALES (
+    ID INT IDENTITY(1,1),
+    GuestName VARCHAR(255),
+    SpentAmount DECIMAL(7,2),
+    BillingDate DATE,
+);
+ALTER TABLE [BasementRats] ADD [TavernName] VARCHAR(255) ;
+ALTER TABLE [BasementRats] ADD [TavernID] INT ;
+
+INSERT INTO Taverns (TavernName)
+VALUES
+    ('Roasted pig'),
+    ('Little Fox'),
+    ('Cozy place'),
+    ('Tom&Jerry');
+
+INSERT INTO Users (UserName)
+VALUES
+    ('Rita'),
+    ('Antonio'),
+    ('Kale'),
+    ('Susan'),
+    ('Margaret');
+
+
+INSERT INTO Roles (RoleName, RoleDescription)
+VALUES
+    ('Cleaner', 'Clean tavern’s floor'),
+    ('Hostess', 'Meeting all newcomers'),
+    ('Bartender', 'Preparing and pouring everyone drinks'),
+    ('Musician', 'Plays music for guests'),
+    ('Cook', 'Preparing food');
+
+INSERT INTO BasementRats (TavernID, RatsName, TavernName)
+VALUES
+    (1, 'Rat1', 'Roasted pig'),
+    (2, 'Rat2', 'Little Fox'),
+    (3, 'Rat3', 'Cozy place'),
+    (4, 'Rat4', 'Tom&Jerry');
+    
+
+INSERT INTO Location (LocationName)
+VALUES
+    ('New York'),
+    ('Philadelphia'),
+    ('Moscow'),
+    ('Washington D.C.');
+    
+
+INSERT INTO SupProducts  (ProductName, Cost, Quantity, Unit, QuantityOnStock, ProductCreated,ExpirationDate, UpdatedDate)
+
+VALUES
+    ('Beer', 10, 150, 'oz',  10000, '2000-01-01 00:00:00' , '2000-01-01 00:00:00' , '2000-01-01 00:00:00' ),
+    ('Wine', 20, 200, 'ml',  1000, '2000-01-01 00:00:00' , '2000-01-01 00:00:00' , '2000-01-01 00:00:00' ),
+     ('Bread', 10, 150, 'loaf', 50, '2000-01-01 00:00:00' ,'2000-01-01 00:00:00' , '2000-01-01 00:00:00' ),
+     ('Beef', 30, 100, 'gramm', 2000, '2000-01-01 00:00:00' ,'2000-01-01 00:00:00' , '2000-01-01 00:00:00' );
+    
+
+INSERT INTO ReceivedSups (AmountRcvd, DateRcvd)
+
+VALUES
+    (120, '2000-01-01 00:00:00' ),
+    (130, '2000-01-01 00:00:00' ),
+    (140, '2000-01-01 00:00:00' ),
+    (150, '2000-01-01 00:00:00' ),
+    (160, '2000-01-01 00:00:00' );
+
+INSERT INTO Services (ServName)
+VALUES
+    ('Swim teaching'),
+    ('Archery'),
+    ('Portrait Drawing'),
+    ('Sword Sharpening');
+  
+
+INSERT INTO ServStatus (StatusName)
+VALUES
+    ('Not available'),
+    ('Pending'),
+    ('Active');
+
+
+INSERT INTO Sales (GuestName, SpentAmount, BillingDate)
+
+VALUES
+    ('Dave',20000, '2000-01-01 00:00:00' ),
+    ('Jane',25000, '2000-01-01 00:00:00' ),
+    ('Crystal',2000, '2000-01-01 00:00:00' ),
+    ('Hudson',40000, '2000-01-01 00:00:00' ),
+    ('Miriam',100000, '2000-01-01 00:00:00' );
+
+
+
+INSERT INTO GUESTS (GuestName, GuestAdress, GuestDOB, GuestSex)
+VALUES
+('Dave', 'Philadelphia', 1985-06-04 00:00:00 ,'M'),
+('Jane', 'Trenton', 1990-06-05 00:00:00 , 'F'),
+('Crystal', 'New York',1995-04-02 00:00:00 ,'F'),
+('Hudson', 'Washington D.C.',1978-07-12 00:00:00 ,'M'),
+('Miriam' , 'New York',1991-01-31 00:00:00 ,'F');
+
+
+
+

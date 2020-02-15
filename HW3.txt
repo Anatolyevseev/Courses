@@ -1,0 +1,94 @@
+CREATE TABLE [ROOMS](
+ID INT IDENTITY(1, 1) PRIMARY KEY,
+StatusName varchar(255),
+TavernID INT FOREIGN KEY References Taverns (ID),
+);
+
+CREATE TABLE [ROOMSTAYS] (
+ID INT IDENTITY(1, 1) PRIMARY KEY,
+SaleID INT FOREIGN KEY References SALES (ID),
+ROOMID INT FOREIGN KEY References ROOMS (ID),
+GUESTID INT FOREIGN KEY References GUESTS (ID),
+RATE INT,
+DATESTAYED DATE
+);
+
+SELECT * FROM Guests WHERE Guests.GuestDOB BETWEEN '19000101' and '19991231';
+
+INSERT INTO ROOMSTAYS (Rate)
+VALUES
+   (100),
+   (50),
+   (200),
+   (20),
+   (180);
+
+SELECT * FROM RoomStays WHERE RoomStays.Rate > 100;
+
+SELECT * FROM Guests WHERE GuestName = 'Dave';
+
+SELECT * FROM Guests ORDER BY GuestName ASC;
+
+SELECT TOP(10) WITH TIES
+ SpentAmount, BillingDate
+FROM SALES
+ORDER BY SpentAmount Desc;
+
+
+
+SELECT  
+      TavernName, ID , 'tavern' as tbl
+  FROM Taverns
+UNION ALL
+SELECT  
+     LocationName, ID, 'location' as tbl
+  FROM Location
+UNION ALL
+SELECT  
+      ClassesName ,ID, 'classes' as tbl
+  FROM Classes
+UNION ALL
+SELECT  UserName, ID, 'users' as tbl
+  FROM Users
+UNION ALL
+SELECT ProductName, ID, 'SupProducts' as tbl
+  FROM SupProducts
+UNION ALL
+SELECT  SuplyName ,ID, 'SupplySales' as tbl
+  FROM SupplySales
+  UNION ALL
+  SELECT  SuplyName, ID, 'Supplies' as tbl
+  FROM Supplies
+  UNION ALL
+  SELECT StatusName,ID, 'ServStatus' as tbl
+  FROM ServStatus
+  UNION ALL
+  SELECT  ServName,ID, 'Services' as tbl
+  FROM Services
+  UNION ALL
+  SELECT  GuestName,ID, 'Sales' as tbl
+  FROM SALES
+  UNION ALL
+  SELECT  StatusName,ID, 'Rooms' as tbl
+  FROM ROOMS
+  UNION ALL
+  SELECT  RoleName,ID, 'Roles' as tbl
+  FROM Roles
+  UNION ALL
+  SELECT  StatusName,ID, 'Gueststatus' as tbl
+  FROM GUESTSTATUS
+  UNION ALL
+  SELECT  GuestName,ID, 'Guests' as tbl
+  FROM Guests
+
+SELECT GUESTID, CLASSID, LEVEL, (CASE WHEN LEVEL<2 
+Then '<2' Else '>2' END) as 'Level sorting' from GUESTCLASS 
+
+
+/*
+Select CONCAT ('INSERT INTO (',Table_name,'(StatusName)') as query
+FROM INFORMATION_SCHEMA.TABLES
+Where TABLE_NAME = 'ServStatus'
+UNION ALL
+Select CONCAT ('VALUES (', (SELECT SupplyName from Supplies Where SupplyID =1), ', ', (Select SupplyCost from Supplies Where SupplyID =1), ')')
+/*

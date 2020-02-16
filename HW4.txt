@@ -1,0 +1,86 @@
+Select USERNAME,RoleName,RoleDescription from Users
+Left join Roles on (Roles.ID = Users.ID) where RoleName = 'Cleaner' 
+
+
+Select USERNAME,TavernName,RoleName,RoleDescription from Taverns
+Left join Users on (Users.ID = Taverns.ID)
+Left join Roles on (Roles.ID = Users.ID) Where RoleName = 'Cleaner'
+
+Select GuestName,ClassesName,Level from Guests
+Left join GUESTCLASS on (Guests.id = Guestclass.GUESTID)
+Left join Classes on (classes.id = GUESTCLASS.CLASSID)
+where level>0
+Order by GuestName ASC
+
+
+Select top 2 GuestName,SpentAmount from Sales
+Left join services on (Sales.Id = Services.id)
+order by SpentAmount desc
+
+Select GuestName,ClassesName,Level from Guests
+Left join GUESTCLASS on (Guests.id = Guestclass.GUESTID)
+Left join Classes on (classes.id = GUESTCLASS.CLASSID)
+WHERE GUESTS.ID IN (SELECT GuestID FROM GuestClass GROUP BY GuestID
+HAVING COUNT(*) >1)
+order by GuestName desc; 
+
+Select GuestName,ClassesName,Level from Guests
+Left join GUESTCLASS on (Guests.id = Guestclass.GUESTID)
+Left join Classes on (classes.id = GUESTCLASS.CLASSID)
+WHERE Level>=5 and GUESTS.ID IN (SELECT GuestID FROM GuestClass GROUP BY GuestID
+HAVING COUNT(*) >1)
+order by GuestName desc; 
+ 
+Select GuestName,MAX(Level) as LevelMax from (Select Classes.ClassesName,Guests.GuestName,Level from GUESTCLASS 
+Left join Guests on (Guests.id = Guestclass.GUESTID)
+Left join Classes on (classes.id = GUESTCLASS.CLASSID)) as Tab
+Group by Guestname;
+
+
+Select Guestname,DATEcheckin, DATEcheckout FROM ROOMSTAYS
+LEFT JOIN Guests on (Guests.ID = ROOMSTAYS.ID)
+Where DATEcheckin BETWEEN '2019-08-01' AND '2019-08-20'
+AND DATECHECKOUT BETWEEN '2019-08-01' AND '2019-08-20'
+
+
+
+SELECT 
+CONCAT('CREATE TABLE ',TABLE_NAME, ' (') as queryPiece 
+FROM INFORMATION_SCHEMA.TABLES
+ WHERE TABLE_NAME = 'Taverns'
+UNION ALL
+SELECT CONCAT(cols.COLUMN_NAME, ' ', cols.DATA_TYPE, 
+(
+	CASE WHEN CHARACTER_MAXIMUM_LENGTH IS NOT NULL 
+	Then CONCAT
+		('(', CAST(CHARACTER_MAXIMUM_LENGTH as varchar(100)), ')') 
+	Else '' 
+	END)
+, 
+	CASE WHEN refConst.CONSTRAINT_NAME iS NOT NULL
+	Then 
+		(CONCAT(' FOREIGN KEY REFERENCES ', constKeys.TABLE_NAME, '(', constKeys.COLUMN_NAME, ')')) 
+	Else '' 
+	END
+, 
+--Added the following Case Statement to Check for Primary Keys in the keys table in order
+--to add in PK statement and Identity
+	CASE WHEN keys.CONSTRAINT_NAME LIKE 'PK%'
+	Then 
+			' PRIMARY KEY IDENTITY(1,1) '
+	Else '' 
+	END
+, 
+',') as queryPiece From
+INFORMATION_SCHEMA.COLUMNS as cols
+LEFT JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE as keys ON 
+(keys.TABLE_NAME = cols.TABLE_NAME and keys.COLUMN_NAME = cols.COLUMN_NAME)
+LEFT JOIN INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS as refConst ON 
+(refConst.CONSTRAINT_NAME = keys.CONSTRAINT_NAME)
+LEFT JOIN 
+(SELECT DISTINCT CONSTRAINT_NAME, TABLE_NAME, COLUMN_NAME 
+FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE) as constKeys 
+ON (constKeys.CONSTRAINT_NAME = refConst.UNIQUE_CONSTRAINT_NAME)
+ WHERE cols.TABLE_NAME = 'Taverns'
+UNION ALL
+SELECT ')'; 

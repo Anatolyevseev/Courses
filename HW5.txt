@@ -1,0 +1,111 @@
+IF OBJECT_ID (N'DBO.getUserRoles', N'IF') IS NOT NULL  
+    DROP FUNCTION DBO.getUserRoles;  
+GO
+CREATE FUNCTION DBO.getUserRoles(@ID INT)
+RETURNS TABLE
+AS RETURN
+(
+Select USERNAME,TavernName,RoleName,RoleDescription from Taverns
+Left join Users on (Users.ID = Taverns.ID)
+Left join Roles on (Roles.ID = Users.ID) 
+)
+GO
+
+
+Select ClassesName,COUNT( Level ) as GuestInvolved
+FROM GUESTCLASS  
+Left join GUESTS on (Guests.id = Guestclass.GUESTID)
+Left join Classes on (classes.id = GUESTCLASS.CLASSID)
+WHERE level>0
+Group by ClassesName
+
+
+Select GuestName,ClassesName,Level,CASE WHEN Level>6 THEN 'Expert' WHEN Level>3 AND Level<6 THEN 'Intermediate' ELSE 'Beginner' END as LevelQuality
+FROM GUESTCLASS  
+Left join GUESTS on (Guests.id = Guestclass.GUESTID)
+Left join Classes on (classes.id = GUESTCLASS.CLASSID)
+Group by GuestName,ClassesName,Level
+Order by GuestName
+
+IF OBJECT_ID (N'DBO.getLevelQuality', N'IF') IS NOT NULL  
+    DROP FUNCTION DBO.getLevelQuality;  
+GO
+CREATE FUNCTION DBO.getLevelQuality(@level INT)
+RETURNS TABLE
+AS RETURN
+(
+Select GuestName,ClassesName,Level,CASE WHEN Level>6 THEN 'Expert' WHEN Level>3 AND Level<6 THEN 'Intermediate' ELSE 'Beginner' END as LevelQuality
+FROM GUESTCLASS  
+Left join GUESTS on (Guests.id = Guestclass.GUESTID)
+Left join Classes on (classes.id = GUESTCLASS.CLASSID)
+WHERE GUESTCLASS.LEVEL = @level
+Group by GuestName,ClassesName,Level
+)
+GO
+SELECT * FROM dbo.getLevelQuality(7);
+
+
+IF OBJECT_ID (N'dbo.RoomAva',N'IF') Is Not NULL
+DROP FUNCTION dbo.Roomava;
+GO
+CREATE FUNCTION dbo.RoomAva (@date date)
+RETURNS TABLE  
+AS  
+RETURN  
+(
+Select TavernName,RoomNumber FROM ROOMSTAYS as rms
+LEFT JOIN Rooms as r on (r.ID = rms.ID)
+LEFT JOIN Taverns as t on (r.TavernID = t.ID)
+Where @date BETWEEN rms.DATEcheckin AND rms.dATECHECKOUT
+
+);
+
+Select * From dbo.RoomAva('2019-08-02')
+
+
+IF OBJECT_ID (N'dbo.RoomPrice',N'IF') Is Not NULL
+DROP FUNCTION dbo.RoomPrice;
+GO
+CREATE FUNCTION dbo.RoomPrice (@Prmin int,@Prmax int)
+RETURNS TABLE  
+AS  
+RETURN  
+(
+Select TavernName,Rate FROM ROOMSTAYS as rms
+LEFT JOIN Rooms as r on (r.ID = rms.ID)
+LEFT JOIN Taverns as t on (r.TavernID = t.ID)
+Where rms.Rate BETWEEN @Prmin AND @Prmax
+);
+Select * From dbo.RoomPrice(100,500)
+
+
+
+IF OBJECT_ID (N'dbo.RoomCreation', N'FN') IS NOT NULL  
+    DROP PROCEDURE RoomCreation; 
+GO
+CREATE PROCEDURE dbo.RoomCreation
+@cost int = NULL,
+@TavernName varchar(50)= 'Tavern',
+@tavern int = NULL,
+@newTavern int = NULL
+AS
+SET @cost = (Select MIN(RATE) From dbo.RoomPrice(1, 1000));
+SET @TavernName = (SELECT Top 1 TavernName From dbo.RoomPrice(1, 1000) as RoomTable
+	WHERE RATE = (
+        SELECT 
+            MIN(RATE)
+        FROM
+            dbo.RoomPrice(1, 1000)));
+SET @tavern = (Select ID FROM Taverns Where TavernName = @TavernName);
+If (@tavern = (Select COUNT(*) From Taverns))
+			BEGIN
+			SET @newTavern = (@tavern - (@tavern - 1));
+			END   
+			ELSE 
+			BEGIN 
+			SET @newTavern = (@tavern + 1);
+			END 
+INSERT INTO ROOMSTAYS (RATE, ID)
+
+VALUES ((@cost-1), @newTavern)
+GO
